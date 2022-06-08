@@ -20,9 +20,9 @@ class ServiceVersionService(
 
         return if (serviceEntity.systemVersionEntities.isEmpty()) {
             val prevSystemVersion = systemVersionRepository.findFirstByOrderByIdDesc()
-            val services = mutableSetOf<ServiceEntity>()
-            prevSystemVersion?.services?.let { services.addAll(it) }
-            services.add(serviceEntity)
+            val services = mutableMapOf<String, ServiceEntity>()
+            prevSystemVersion?.services?.let { services.putAll(it) }
+            services[serviceEntity.name] = serviceEntity
             serviceRepository.save(serviceEntity)
             val systemVersionEntity = SystemVersionEntity(null, services)
             systemVersionRepository.save(systemVersionEntity).id ?: 0

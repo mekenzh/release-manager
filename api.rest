@@ -6,3 +6,6 @@ Content-Type: application/json
   "name": "Service A",
   "version": 4
 }
+
+### Get list of services by System version
+GET localhost:8080/services?systemVersion=6

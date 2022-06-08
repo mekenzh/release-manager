@@ -9,6 +9,6 @@ import org.springframework.stereotype.Service
 class SystemVersionService(val systemVersionRepository: SystemVersionRepository) {
     fun getSystemVersion(version: Int): SystemVersion {
         return SystemVersion(systemVersionRepository.findById(version)
-            .orElseGet { SystemVersionEntity(0, mutableSetOf()) })
+            .orElseGet { SystemVersionEntity(0, mutableMapOf()) })
     }
 }

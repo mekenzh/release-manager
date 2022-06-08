@@ -7,6 +7,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 import javax.persistence.ManyToMany
+import javax.persistence.MapKey
 
 @Entity
 class SystemVersionEntity(
@@ -15,7 +16,9 @@ class SystemVersionEntity(
         name = "system_service",
         joinColumns = [JoinColumn(name = "system_version_id")],
         inverseJoinColumns = [JoinColumn(name = "service_id")]
-    ) val services: MutableSet<ServiceEntity>
+    )
+    @MapKey(name="name")
+    val services: MutableMap<String ,ServiceEntity>
 ) : Comparable<SystemVersionEntity> {
     override fun compareTo(other: SystemVersionEntity): Int {
         val thisId = id ?: 0
