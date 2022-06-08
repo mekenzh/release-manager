@@ -17,8 +17,9 @@ class SystemVersionEntity(
         joinColumns = [JoinColumn(name = "system_version_id")],
         inverseJoinColumns = [JoinColumn(name = "service_id")]
     )
-    @MapKey(name="name")
-    val services: MutableMap<String ,ServiceEntity>
+    @MapKey(name = "name")
+    val services: Map<String, ServiceEntity>,
+    val version: Int
 ) : Comparable<SystemVersionEntity> {
     override fun compareTo(other: SystemVersionEntity): Int {
         val thisId = id ?: 0

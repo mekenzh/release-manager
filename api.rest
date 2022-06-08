@@ -3,9 +3,9 @@ POST localhost:8080/deploy
 Content-Type: application/json
 
 {
-  "name": "Service A",
-  "version": 4
+  "name": "Service B",
+  "version": 3
 }
 
 ### Get list of services by System version
-GET localhost:8080/services?systemVersion=6
+GET localhost:8080/services?systemVersion=5

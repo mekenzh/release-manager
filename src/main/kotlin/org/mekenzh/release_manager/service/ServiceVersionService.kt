@@ -5,8 +5,8 @@ import org.mekenzh.release_manager.entity.SystemVersionEntity
 import org.mekenzh.release_manager.model.Service
 import org.mekenzh.release_manager.repository.ServiceRepository
 import org.mekenzh.release_manager.repository.SystemVersionRepository
+import org.mekenzh.release_manager.utils.SYSTEM_VERSION_STUB
 import org.springframework.stereotype.Component
-import java.util.Collections
 
 @Component
 class ServiceVersionService(
@@ -16,19 +16,28 @@ class ServiceVersionService(
     fun calculateSystemVersion(service: Service): Int {
         val serviceEntity =
             serviceRepository.findByNameAndVersion(service.name, service.version)
-                ?: serviceRepository.save(ServiceEntity(service))
+                .orElseGet { serviceRepository.save(ServiceEntity(service)) }
 
-        return if (serviceEntity.systemVersionEntities.isEmpty()) {
-            val prevSystemVersion = systemVersionRepository.findFirstByOrderByIdDesc()
-            val services = mutableMapOf<String, ServiceEntity>()
-            prevSystemVersion?.services?.let { services.putAll(it) }
-            services[serviceEntity.name] = serviceEntity
-            serviceRepository.save(serviceEntity)
-            val systemVersionEntity = SystemVersionEntity(null, services)
-            systemVersionRepository.save(systemVersionEntity).id ?: 0
+        val currentSystemVersion = systemVersionRepository.findFirstByOrderByVersionDesc()
+            .orElseGet { SYSTEM_VERSION_STUB }
+        val services = currentSystemVersion.services
+
+        val systemVersion = if (services.contains(service.name)) {
+            if (services[service.name]!!.version != service.version) {
+                val newServices = mutableMapOf<String, ServiceEntity>()
+                newServices.putAll(services)
+                newServices[service.name] = serviceEntity
+                systemVersionRepository.save(SystemVersionEntity(null, newServices, currentSystemVersion.version + 1))
+            } else {
+                currentSystemVersion
+            }
         } else {
-            Collections.max(serviceEntity.systemVersionEntities).id ?: 0
+            val newServices = mutableMapOf<String, ServiceEntity>()
+            newServices.putAll(services)
+            newServices[service.name] = serviceEntity
+            systemVersionRepository.save(SystemVersionEntity(null, newServices, currentSystemVersion.version + 1))
         }
+        return systemVersion.version
 
     }
 }
