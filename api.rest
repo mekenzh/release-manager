@@ -1,0 +1,8 @@
+### Send new version of deployed service
+POST localhost:8080/deploy
+Content-Type: application/json
+
+{
+  "name": "Service A",
+  "version": 4
+}
